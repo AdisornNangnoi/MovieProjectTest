@@ -23,7 +23,7 @@ namespace MovieProjectTest
             MessageBox.Show(msg, "คำเตือน", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        private static string connStr = "Server =AdisornMew\\SQLEXPRESS; Database=movie_db;Trusted_connection=true";
+        private static string connStr = "Server =AdisornMew\\SQLEXPRESS; Database=movie_record_db;Trusted_connection=true";
         public FrmMovie()
         {
             InitializeComponent();
@@ -341,13 +341,13 @@ namespace MovieProjectTest
                         // ตรวจสอบว่าเป็นข้อมูลใหม่หรือเก่า
                         if (IsNewMovie(lbMovieId.Text)) // ถ้าเป็นหนังใหม่ → INSERT
                         {
-                            strSql = "INSERT INTO movie_tb (movieId, movieName, movieDetail, movieDateSale, movieLenghtHour, movieLenghtMinute, movieTypeId, movieDVDTotal, movieDVDPrice, movieImg, movieDirImg) " +
-                                     "VALUES (@movieId, @movieName, @movieDetail, @movieDateSale, @movieLenghtHour, @movieLenghtMinute, @movieTypeId, @movieDVDTotal, @movieDVDPrice, @movieImg, @movieDirImg)";
+                            strSql = "INSERT INTO movie_tb (movieId, movieName, movieDetail, movieDateSale, movieLengthHour, movieLengthMinute, movieTypeId, movieDVDTotal, movieDVDPrice, movieImg, movieDirImg) " +
+                                     "VALUES (@movieId, @movieName, @movieDetail, @movieDateSale, @movieLengthHour, @movieLengthMinute, @movieTypeId, @movieDVDTotal, @movieDVDPrice, @movieImg, @movieDirImg)";
                         }
                         else // ถ้ามีอยู่แล้ว → UPDATE
                         {
-                            strSql = "UPDATE movie_tb SET movieName=@movieName, movieDetail=@movieDetail, movieDateSale=@movieDateSale, movieLenghtHour=@movieLenghtHour, " +
-                                     "movieLenghtMinute=@movieLenghtMinute, movieTypeId=@movieTypeId, movieDVDTotal=@movieDVDTotal, movieDVDPrice=@movieDVDPrice, movieImg=@movieImg , movieDirImg=@movieDirImg " +
+                            strSql = "UPDATE movie_tb SET movieName=@movieName, movieDetail=@movieDetail, movieDateSale=@movieDateSale, movieLengthHour=@movieLengthHour, " +
+                                     "movieLengthMinute=@movieLengthMinute, movieTypeId=@movieTypeId, movieDVDTotal=@movieDVDTotal, movieDVDPrice=@movieDVDPrice, movieImg=@movieImg , movieDirImg=@movieDirImg " +
                                      "WHERE movieId=@movieId";
                         }
 
@@ -358,8 +358,8 @@ namespace MovieProjectTest
                         sqlCommand.Parameters.AddWithValue("@movieName", tbMovieName.Text.Trim());
                         sqlCommand.Parameters.AddWithValue("@movieDetail", tbMovieDetail.Text.Trim());
                         sqlCommand.Parameters.AddWithValue("@movieDateSale", dtpMovieDateSale.Value);
-                        sqlCommand.Parameters.AddWithValue("@movieLenghtHour", nudMovieHour.Value);
-                        sqlCommand.Parameters.AddWithValue("@movieLenghtMinute", nudMovieMinute.Value);
+                        sqlCommand.Parameters.AddWithValue("@movieLengthHour", nudMovieHour.Value);
+                        sqlCommand.Parameters.AddWithValue("@movieLengthMinute", nudMovieMinute.Value);
                         sqlCommand.Parameters.AddWithValue("@movieTypeId", cbbMovieType.SelectedIndex + 1); // ✅ บันทึก Index+1
                         sqlCommand.Parameters.AddWithValue("@movieDVDTotal", Convert.ToInt32(tbMovieDVDTotal.Text));
                         sqlCommand.Parameters.AddWithValue("@movieDVDPrice", Convert.ToDecimal(tbMovieDVDPrice.Text));
@@ -398,10 +398,13 @@ namespace MovieProjectTest
             if (rdMovieId.Checked)
             {
                 SearchByMovieID(searchText);
+                groupBox2.Enabled = false;
             }
             else if (rdMovieName.Checked)
             {
                 SearchByMovieName(searchText);
+                groupBox2.Enabled = false;
+
             }
 
             // ตรวจสอบว่ามีรายการใน lsMovieShow หรือไม่
@@ -549,6 +552,7 @@ namespace MovieProjectTest
                 btAdd.Enabled = false;
                 btEdit.Enabled = true;
                 btDel.Enabled = true;
+                btSaveAddEdit.Enabled = false;
                 string movieId = lsMovieShow.SelectedItems[0].Tag.ToString(); // ดึง movieId จาก Tag
 
                 // ดึงข้อมูลภาพยนตร์จากฐานข้อมูลและแสดงในฟอร์ม
@@ -557,7 +561,7 @@ namespace MovieProjectTest
                     try
                     {
                         connection.Open();
-                        string query = "SELECT movieName, movieDetail, movieDateSale, movieLenghtHour, movieLenghtMinute, movieTypeId, movieDVDTotal, movieDVDPrice, movieImg, movieDirImg FROM movie_tb WHERE movieId = @movieId";
+                        string query = "SELECT movieName, movieDetail, movieDateSale, movieLengthHour, movieLengthMinute, movieTypeId, movieDVDTotal, movieDVDPrice, movieImg, movieDirImg FROM movie_tb WHERE movieId = @movieId";
                         SqlCommand command = new SqlCommand(query, connection);
                         command.Parameters.AddWithValue("@movieId", movieId);
 
@@ -568,8 +572,8 @@ namespace MovieProjectTest
                             tbMovieName.Text = reader["movieName"].ToString();
                             tbMovieDetail.Text = reader["movieDetail"].ToString();
                             dtpMovieDateSale.Value = Convert.ToDateTime(reader["movieDateSale"]);
-                            nudMovieHour.Value = Convert.ToInt32(reader["movieLenghtHour"]);
-                            nudMovieMinute.Value = Convert.ToInt32(reader["movieLenghtMinute"]);
+                            nudMovieHour.Value = Convert.ToInt32(reader["movieLengthHour"]);
+                            nudMovieMinute.Value = Convert.ToInt32(reader["movieLengthMinute"]);
                             cbbMovieType.SelectedIndex = Convert.ToInt32(reader["movieTypeId"]) - 1; // แสดง Index-1
                             tbMovieDVDTotal.Text = reader["movieDVDTotal"].ToString();
                             tbMovieDVDPrice.Text = reader["movieDVDPrice"].ToString();
